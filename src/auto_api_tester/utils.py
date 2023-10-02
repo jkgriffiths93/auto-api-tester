@@ -1,19 +1,6 @@
 import copy
 import datetime as dt
 
-
-import re
-import copy
-import json
-import time
-import random
-import requests
-import itertools
-import datetime as dt
-import IPython.display as disp
-
-from timer_bar import TimerBar
-
 def change_date(date_string, days_diff, input_form='%Y-%m-%d'):
     '''
     calculates days difference for a date string

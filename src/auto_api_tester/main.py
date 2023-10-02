@@ -18,17 +18,7 @@ from timer_bar import TimerBar
 
 ## -----------------------------------------------------------------------------
 
-from .helpers import change_date,
-                     test_boundary,
-                     check_field,
-                     update_field_value,
-                     get_field_value,
-                     create_test_field,
-                     update_url_id,
-                     find_vals,
-                     find_hb_vals,
-                     find_ids_vals,
-                     result_template
+from .utils import change_date, test_boundary, check_field, update_field_value, get_field_value, create_test_field, update_url_id, find_vals, find_hb_vals,find_ids_vals, result_template
 
 ## -----------------------------------------------------------------------------
 
