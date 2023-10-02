@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "auto-api-tester"
+version = "0.0.1"
+authors = [
+  { name="Jeff Griffiths", email="jkgriffiths93@gmail.com" },
+]
+description = "Tool to test RESTful APIs with built in and user input functions"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependecies = [
+    "requests>=2.28.1",
+    "IPython>=8.10.0",
+    "timer-bar>=0.0.10",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jkgriffiths93/auto_api_tester"
