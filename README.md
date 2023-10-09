@@ -9,7 +9,10 @@ An object designed to run various preset and custom API tests.
   - [General](#general-tests)
   - [Field Specific](#field-specific-tests)
   - [Custom](#custom-tests)
+    - [Custom Inputs](#custom-inputs)
+    - [Custom Tests](#custom-tests)
 - [Implementation](#implementation)
+- [Results](#results)
 - [Class Attributes and Methods](#class-attributes-and-methods)
   - [Input Attributes](#input-attributes)
   - [Non-Input Attributes](#non-input-attributes)
@@ -20,7 +23,11 @@ An object designed to run various preset and custom API tests.
   - [Other Methods](#other-methods)
 
 ## Overview
+To be updated
+
 [general idea of predo, test, undo]
+
+[general idea of how test works-- input expected result, send any needed info, record info, etc.]
 
 ## Tests
 
@@ -95,34 +102,97 @@ Tests that an input field meets various requirements as dictated by the optional
    - **Special Character in password (if special_character in field parameters)**: removes special characters in password and if minimum length is required replicates remaining password, then tests to make sure the special character-less password is rejected
 
 #### Non-array
+Any field that has a data type that is NOT array might be subject to these tests
 
-   - **Array of possible inputs (array in field_parameters)**:
-     - Test each value in possible inputs array: 
-     - Test random value outside of possible array: 
-   - **Wrong datatypes (multiple)**:
+   - Array of possible inputs (array in field_parameters): if a field is NOT an array *field_type* but has an array of possible values (input as *array* in *field_parameters*); *excluded* must be included as a parameter in *field_parameters* for these tests to run and should be a value that should not be accepted by the api
+     - **Test each value in possible inputs array**: test that each value in the input accetpable values *array* is accepted
+     - **Test random value outside of possible array**: test that the *excluded* parameter is rejected
+   - **Wrong datatypes (multiple)**: for all *test_type* excluding 'string', 'password', 'email', and 'original_password', runs through specified preset data type test values (string: 'a', integer: 1, float: 1.1, boolean: True) and makes sure input is only accepted when the correct data type is accepted
 
 #### Array
+These tests are run if a *field_type* of 'array' is provided for a given field
 
-   - **Empty array**:
-   - **Wrong datatypes (multiple)**:
-   - **Duplicate (if duplicate is True in field_parameters)**:
-     - Duplicate array values:
-   - **Array of possible inputs (array in field_parameters)**:
-     - Each value individually from possible inputs array:
-     - Single value outside of possible array:
-     - Random sample of values in possible inputs array:
-     - Single value outside of possible array with random sample of values in possible inputs array:
-     - All values in possible inputs array:
-     - Single value outside of possible array with all values in possible inputs array:
+   - **Empty array**: tests that an empty array is rejected
+   - **Wrong datatypes (multiple)**: for all *array_type* excluding 'string' and 'array', sends a single value array of each of the data types to test that only the proper array_type is accepted (*array_type* is a parameter of the *test_field* that can be included; this test will only run if an *array_type* is included)
+   - Duplicate (if duplicate is True in field_parameters): 
+   - **Duplicate array values**: ran only if *duplicates* is included in *field_parameters*; will send request with an array of a duplicated known successful value (from base case) and will test whether it fails when expected (*duplicates* = False) or succeed (*duplicates* = True)
+   - **Array of possible inputs (array in field_parameters)**: if an array has an array of possible values (input as *array* in *field_parameters*); *excluded* must be included as a parameter in *field_parameters* for these tests to run and should be a value that should not be accepted by the api
+     - **Each value individually from possible inputs array**: sends a single value array of each of the possible values to test whether the request is successful
+     - **Single value outside of possible array**: sends a single value array of the *excluded* value to test whether the request fails
+     - **Random sample of values in possible inputs array**: runs a test of 5 arrays of random sizes (between 1 and length of possible array) to test whether requests are successful
+     - **Single value outside of possible array with random sample of values in possible inputs array**: uses random arrays in 'Random sample...' test and tacks on the *excluded* value at the start of the arrays to test whether requests are rejected
+     - **All values in possible inputs array**: sends the entire possible values array to test whether request is successful
+     - **Single value outside of possible array with all values in possible inputs array**: sends the entire possible values array with the *excluded* value added to the end of the array to test whether request is rejected
 
 
 ### Custom Tests
 
+#### Custom Inputs
+A list of known inputs can be tested by use of the *custom_inputs* parameter. The *custom_inputs* parameter is an array of dict with the form below used that uses the same internal methods to run tests (including using test url/function and running any predo or undo requests), but using any combination of input custom header, body, and url_ids:
+```
+{
+  test_expected_api_result (bool): REQUIRED whether the api is expected to be successful
+  field (string): field that the test is associated with
+  test_name (string): name of the test that is being run
+  error (string): error message to be recorded should there be an unexpected result
+  test_header (dict): header that you would like to test (omit to maintain test
+      attribute's standard header value)
+  test_body(dict): body that you would like to test (omit to maintain test attribute's
+      standard body value)
+  test_url_ids (list): url_ids that you would like to test (omit to maintain test
+      attribute's standard url_ids value)
+}
+```
 
+#### Custom Tests
+A list of custom tests that follow the structure as outlined below can be provided. These tests will be run by the APITester object and the results will be included along with the other standard/built-in tests.
 
+The custom_tests is input as an array of dict with the form below that are used to run custom tests. Here is the structure of those dict:
+```
+{
+  function (function): the custom function to be run by the APITester object. It must have
+      the following characteristics:
+      Inputs:
+          standard_inputs (dict, argument 1): the 'inputs' dict that is the second attribute
+              in the 'custom_tests' dict as described below
+          obj (object, argument 2): 'self' will be passed to the function to allow for
+              attributes and methods of the APITester objected to be accessed and ran
+      Internal Processes:
+          If progress through progress bars is desirable, use the l3_progress_bar object and 
+              update_progress_bars method to update the progress bar. If you choose to do this,
+              make sure the following are inluded somewhere in each custom function:
+                  # at the start of the code vv
+                  obj.l3_progress_bar['active'] = True
+                  obj.l3_progress_bar['progress_bar'].steps = <number of expected steps>
+                  obj.l3_progress_bar['current_step'] = -1 # will restart progress on the bar
+                  ...
+                  # after each iteration if multiple steps are being run vv
+                  obj.update_progress_bar(value_update={'l3': <index of step that was just complete>})
+          Update total errors as they occur by including the following line of code whenever an 
+              issue occurs:
+              obj.add_issue(obj.total_custom_test_issues)
+      Outputs: 
+          out (list): list of objects with same form as 'result_template' function; it is
+              suggestested that the 'result_template' function is integrated into the custom
+              function to enable uniform output; alternatively, the function can output an
+              empty array results can be directly added using obj.add_result method
+  inputs (dict): any input needed to run the process; these should be explicit values, not
+      dependent on other parts of the APITester (can use 'obj' input to access other parts of
+      the APITester); part of the custom function should be processesing this all-in-one dict
+      input into component parts for easy use within the function
+  meta_data (dict): information about the function with the following form:
+      total_tests (integer): number of tests that are to be run as a part of the process; 
+          this number will feed a progress bar to show progress in the test
+}
+```
 
 ## Implementation 
 
+To be updated
+
+## Results
+
+To be updated
 
 ## Class Attributes and Methods
 
