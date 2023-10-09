@@ -4,6 +4,12 @@
 
 An object designed to run various preset and custom API tests.
 
+- [Overview](#overview)
+- [Tests](#tests)
+  - [General](#general-tests)
+  - [Field Specific](#field-specific-tests)
+  - [Custom](#custom-tests)
+- [Implementation](#implementation)
 - [Class Attributes and Methods](#class-attributes-and-methods)
   - [Input Attributes](#input-attributes)
   - [Non-Input Attributes](#non-input-attributes)
@@ -13,11 +19,115 @@ An object designed to run various preset and custom API tests.
     - [rerun_rests](#rerun_rests)
   - [Other Methods](#other-methods)
 
----
+## Overview
+[general idea of predo, test, undo]
+
+## Tests
+
+### General Tests
+Not specific to input
+
+#### General
+Make sure that a base case works to ensure that future test failures (expected or unexpected) don't stem from an unnacceptable base case
+
+- **Acceptable base case**: ensure that user input base case works
+
+#### Access
+If authorization via token is required, make sure that when improper token is included, the API request fails
+
+- **No token**: exclude token
+- **'None'/null for token**: include token, but a None/null value for the token
+- **Shortened token**: remove one character from end of token
+- **Lengthened token**: increase token by one character
+
+#### URL ID
+If an ID is provided as part of the URL, make sure that when improper IDs are provided, the API request fails
+
+For each ID that is a part of the URL:
+- **Exclude ID**: exclude ID from url
+- **Lengthen ID**: increase base case ID by one character
+- **Shorten ID**: decrease base case ID by one character
+
+### Field-Specific Tests
+These tests are ran for each field that is included in the test_fields input parameter, each field potentially being put through different tests depending on the aassociated input parameters (e.g., test_type (string, integer, etc.), field_parameters (min, max, etc.), etc.)
+
+#### General
+
+   - **(non-api) Field either not required or is in test_input**: tests that a given field is either not a required input or, if it is a required input, make sure that the field is included in the input
+   - **(non-api) Field type acceptable**: tests that the "test_type" parameter is included in the list of acceptable values `['string', 'integer', 'float', 'boolean', 'array', 'date', 'password', 'password_confirmation', 'email', 'original_password', 'dict']`
+   - **Acceptable input**: tests that base case input works
+   - **Null value**: tests that null value (None) makes the api fail
+   - **No value (deleted)**: for fields that are required or have no default values, tests that api will fail if field value is deleted/not included
+   - **Delete value**: when delete_field_test is included in the *test* input parameters, this will make sure that when the *delete* value is included, the api runs and successfully deletes the value for that field in the server database; the *delete_value* is a parameter supplied when initializing the object and should align with a keyword definied and used in your APIs to delete a field in the database.
+
+#### Min (min in field_parameters)
+These tests are run for any field with a *min* value in *field_parameters*; *min_inc* can also be provided as a boolean value in *field_parameters* to declare whether min is inclusive (*min_inc* = True; min value is accepted) or exclusive (*min_inc* = False; min value is NOT accepted). *min_inc* has a default value of True (inclusive)
+
+   - **below boundary**: tests that a value below the min is rejected
+   - **at boundary**: tests that a value equal to the min is either accepted (*min_inc* = True or is excluded) or rejected (*min_inc* = False)
+   - **above boundary**: tests that a value above the min is accepted
+
+#### Max (max in field_parameters)
+These tests are run for any field with a *max* value in *field_parameters*; *max_inc* can also be provided as a boolean value in *field_parameters* to declare whether max is inclusive (*max_inc* = True; max value is accepted) or exclusive (*max_inc* = False; max value is NOT accepted). *max_inc* has a default value of True (inclusive)
+
+   - **above boundary**: tests that a value above the max is rejected
+   - **at boundary**: tests that a value equal to the max is either accepted (*max_inc* = True or is excluded) or rejected (*max_inc* = False)
+   - **below boundary**: tests that a value below the max is accepted
+
+#### Email (test_type = 'email')
+These tests are run for any field with a test_type 'email'
+
+   - **Correct email form (loop through different combos of components)**: tests to ensure that only an email address with all of the five following components can be accepted: ['before', '@', 'after', '.', 'end'] --> before@after.end by sending every combo of those five pieces (in that same order) as test values, expecting all but the combination of all five elements to fail
+   - **Email already in database (if existing_email in field_parameters)**: if *existing_email* is provided in *field_parameters*, will send a request with that existing email address to test that it fails when the duplicate value is provided; *existing_email* should be an email address that is known to be in the database for a given field (recommended to make a dummy entry with a dummy email address for this test)
+
+#### Matching values (field in self.matching_fields)
+Tests that two fields that should match each others' values (e.g., email confirmation, password confirmation) matches; is ran only if the parameter *matching_fields* is provided, a list of lists of fields that should match one another (e.g., `matching_fields = [['password', 'password_confirmation'], ['email', 'email_confirmation']]`)
+
+   - **Make matching values different**: tests if the api rejects the request when two different values are provided for matching values
+
+#### Password (test_type = 'password')
+Tests that an input field meets various requirements as dictated by the optional fields in *field_parameters* (length, upper_case, lower_case, number, special_character)
+
+   - **Length of password (if length in field parameters)**: tests a password for a minimum length by looping through lengths from 0 to length + 2 and making sure that all passwords below the specified length are rejected
+   - **Upper case in password (if upper_case in field parameters)**: tests that a lowercase version of the acceptable password is rejected
+   - **Lower case in password (if lower_case in field parameters)**: tests that an uppercase version of the acceptable password is rejected
+   - **Number in password (if number in field parameters)**: removes numbers in password and if minimum length is required replicates remaining password, then tests to make sure the numberless password is rejected
+   - **Special Character in password (if special_character in field parameters)**: removes special characters in password and if minimum length is required replicates remaining password, then tests to make sure the special character-less password is rejected
+
+#### Non-array
+
+   - **Array of possible inputs (array in field_parameters)**:
+     - Test each value in possible inputs array: 
+     - Test random value outside of possible array: 
+   - **Wrong datatypes (multiple)**:
+
+#### Array
+
+   - **Empty array**:
+   - **Wrong datatypes (multiple)**:
+   - **Duplicate (if duplicate is True in field_parameters)**:
+     - Duplicate array values:
+   - **Array of possible inputs (array in field_parameters)**:
+     - Each value individually from possible inputs array:
+     - Single value outside of possible array:
+     - Random sample of values in possible inputs array:
+     - Single value outside of possible array with random sample of values in possible inputs array:
+     - All values in possible inputs array:
+     - Single value outside of possible array with all values in possible inputs array:
+
+
+### Custom Tests
+
+
+
+
+## Implementation 
+
+
 ## Class Attributes and Methods
 
 ### Input Attributes
-#### `base_url` (string)
+####ase_url` (string)
  Base URL consistent across multiple predo, test, and undo functions.
 #### `test_fields` (list)
  List of dictionaries specifying which fields should be tested.
