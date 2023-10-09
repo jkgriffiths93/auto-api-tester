@@ -95,7 +95,8 @@ Tests that two fields that should match each others' values (e.g., email confirm
 #### Password (test_type = 'password')
 Tests that an input field meets various requirements as dictated by the optional fields in *field_parameters* (length, upper_case, lower_case, number, special_character)
 
-   - **Length of password (if length in field parameters)**: tests a password for a minimum length by looping through lengths from 0 to length + 2 and making sure that all passwords below the specified length are rejected
+   - **Min length of password (if min_length in field parameters)**: tests a password for a minimum length by looping through lengths from 0 to length + 2 and making sure that all passwords below the specified length are rejected
+   - **Max length of password (if min_length in field parameters)**: tests a password for a maximum length by looping through lengths from max_length - 1 to max_length + 1 and making sure that all passwords above the specified length are rejected
    - **Upper case in password (if upper_case in field parameters)**: tests that a lowercase version of the acceptable password is rejected
    - **Lower case in password (if lower_case in field parameters)**: tests that an uppercase version of the acceptable password is rejected
    - **Number in password (if number in field parameters)**: removes numbers in password and if minimum length is required replicates remaining password, then tests to make sure the numberless password is rejected
@@ -216,7 +217,8 @@ To be updated
         'min_inc' (bool): inclusive maximum bound; def=True (integer/float fields/array_type)
         'array' (list): list of possible values (string/int/float fields/array_type)
         'duplicates' (bool): can contain duplicate values (list)
-        'length' (int): min length of acceptable string (password)
+        'min_length' (int): min length of acceptable string (password)
+        'max_length' (int): max length of acceptable string (password)
         'upper_case' (bool): string should contain an upper case (password)
         'lower_case' (bool): string should contain a lower case (password)
         'number' (bool): string should contain a number (password)
