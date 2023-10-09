@@ -140,7 +140,8 @@ class APITester():
                         (integer/float fields/array_type)
                     'array' (list): list of possible values (string/int/float fields/array_type)
                     'duplicates' (bool): can contain duplicate values (list)
-                    'length' (int): min length of acceptable string (password)
+                    'min_length' (int): min length of acceptable string (password)
+                    'max_length' (int): max length of acceptable string (password)
                     'upper_case' (bool): string should contain an upper case (password)
                     'lower_case' (bool): string should contain a lower case (password)
                     'number' (bool): string should contain a number (password)
@@ -924,11 +925,12 @@ class APITester():
         V. Matching values (field in self.matching_fields)
             A. Make matching values different
         VI. Password (test_type = 'password')
-            A. Length of password (if length in field parameters)
-            B. Upper case in password (if upper_case in field parameters)
-            C. Lower case in password (if lower_case in field parameters)
-            D. Number in password (if number in field parameters)
-            E. Special Character in password (if special_character in field parameters)
+            A. Min length of password (if min_length in field parameters)
+            B. Max length of password (if max_length in field parameters)
+            C. Upper case in password (if upper_case in field parameters)
+            D. Lower case in password (if lower_case in field parameters)
+            E. Number in password (if number in field parameters)
+            F. Special Character in password (if special_character in field parameters)
         VII. Non-array
             A. Array of possible inputs (array in field_parameters)
                 1. Test each value in possible inputs array
@@ -967,7 +969,8 @@ class APITester():
         array = field_parameters['array'] if 'array' in field_parameters else None
         excluded = field_parameters['excluded'] if 'excluded' in field_parameters else None
         duplicates = field_parameters['duplicates'] if 'duplicates' in field_parameters else None
-        length = field_parameters['length'] if 'length' in field_parameters else None
+        min_length = field_parameters['min_length'] if 'min_length' in field_parameters else None
+        max_length = field_parameters['max_length'] if 'max_length' in field_parameters else None
         upper_case = field_parameters['upper_case'] if 'upper_case' in field_parameters else None
         lower_case = field_parameters['lower_case'] if 'lower_case' in field_parameters else None
         number = field_parameters['number'] if 'number' in field_parameters else None
@@ -993,8 +996,9 @@ class APITester():
         for matching_field_set in self.matching_fields:
             expected_tests += 1 if test_field in matching_field_set else 0
         if test_type == 'password':
-            if length:
-                expected_tests += length+2
+            if min_length:
+                expected_tests += min_length+2
+            expected_tests += 3 if max_length else 0
             expected_tests += 1 if upper_case else 0
             expected_tests += 1 if lower_case else 0
             expected_tests += 1 if number else 0
@@ -1229,48 +1233,65 @@ class APITester():
         if test_type == 'password':
             acceptable_password = acceptable_input[test_field]
 
-            if length:
+            if min_length:
                 # VIA. password minimum length
-                for i in range(length+2):
+                for i in range(min_length+2):
                     temp_password = acceptable_password[:i]
-                    length_success = (i >= length)
+                    min_length_success = (i >= min_length)
+                    run_field_test('password min length',
+                                   f'failed min password when expecting success (length = {i})' if min_length_success else f'success min password when expected failure (length = {i})',
+                                   min_length_success,
+                                   new_value=temp_password)
+                    
+            if max_length:
+                # VIB. password minimum length
+                for i in range(max_length-1, max_length+2):
+                    temp_password = acceptable_password[:i]
+                    if len(temp_password) < i:
+                        while len(temp_password) < i:
+                            temp_password += temp_password[:i - len(temp_password)]
+                    max_length_success = (i <= max_length)
                     run_field_test('password length',
-                                   f'failed password when expecting success (length = {i})' if length_success else f'success password when expected failure (length = {i})',
-                                   length_success,
+                                   f'failed max password when expecting success (length = {i})' if max_length_success else f'success max password when expected failure (length = {i})',
+                                   max_length_success,
                                    new_value=temp_password)
             
             if upper_case:
-                # VIB. uppercase required
+                # VIC. uppercase required
                 run_field_test('password upper case required',
                                'Success when expected failure',
                                False,
                                new_value=acceptable_password.lower())
             
             if lower_case:
-                # VIC. lowercase required
+                # VID. lowercase required
                 run_field_test('password lower case required',
                                'Success when expected failure',
                                False,
                                new_value=acceptable_password.upper())
             
             if number:
-                # VID. number required
+                # VIE. number required
                 temp_password = re.sub(r'\d', '', acceptable_password)
                 # make sure that password is proper length if needed
-                if length:
-                    while len(temp_password) < length:
-                        temp_password += temp_password[:length - len(temp_password)]
+                if min_length is not None and len(temp_password) < min_length:
+                    while len(temp_password) < min_length:
+                        temp_password += temp_password[:min_length - len(temp_password)]
+                if max_length is not None and len(temp_password) > max_length:
+                    temp_password = temp_password[:max_length]
                 run_field_test('password number required',
                                'Success when expected failure',
                                False,
                                new_value=temp_password)
             
             if special_character:
-                # VIE. special character required
+                # VIF. special character required
                 temp_password = re.sub(r'[^a-zA-Z0-9]' ,'', acceptable_password)
-                if length:
-                    while len(temp_password) < length:
-                        temp_password += temp_password[:length - len(temp_password)]
+                if min_length is not None and len(temp_password) < min_length:
+                    while len(temp_password) < min_length:
+                        temp_password += temp_password[:min_length - len(temp_password)]
+                if max_length is not None and len(temp_password) > max_length:
+                    temp_password = temp_password[:max_length]
                 run_field_test('password special character required',
                                'Success when expected failure',
                                False,
@@ -1326,12 +1347,12 @@ class APITester():
                                        False,
                                        new_value=[value])
             
-            if duplicates:
+            if duplicates is not None:
                 # VIIIC1. duplicate array values
                 acceptable_value = get_field_value(acceptable_input, test_field)[0]
                 run_field_test('duplicate array values',
                                f'type success when duplicate values present',
-                               False,
+                               duplicates,
                                new_value=[acceptable_value, acceptable_value])
             
             if array: # array of possible values
