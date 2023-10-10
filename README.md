@@ -1,5 +1,3 @@
-# WiP
-
 # APITester
 
 An object designed to run various preset and custom API tests.
@@ -12,7 +10,10 @@ An object designed to run various preset and custom API tests.
     - [Custom Inputs](#custom-inputs)
     - [Custom Tests](#custom-tests)
 - [Implementation](#implementation)
-- [Results](#results)
+  - [Pre-instantiation](#pre-instantiation)
+  - [Instantiation](#instantiation)
+  - [Running Tests](#running-tests)
+  - [Viewing Results](#viewing-results)
 - [Class Attributes and Methods](#class-attributes-and-methods)
   - [Input Attributes](#input-attributes)
   - [Non-Input Attributes](#non-input-attributes)
@@ -21,15 +22,22 @@ An object designed to run various preset and custom API tests.
     - [run_all_tests](#run_all_tests)
     - [rerun_rests](#rerun_rests)
   - [Other Methods](#other-methods)
+- [Utils Functions](#utils-functions)
 
 ## Overview
-To be updated
 
-[general idea of predo, test, undo]
+The APITester object takes users inputs about what types of tests should be run, runs the tests, then stores the results in a number of formats as different attributes. Each API request has an *api_input*  (object with a url, header, and body), an expected outcome (success of failure), and then a place to store the specific response for further review.
 
-[general idea of how test works-- input expected result, send any needed info, record info, etc.]
+Each test consists of up to three different API requests-- a predo, test, and undo as described below:
+- Predo: **Optional** API request made before test is done that enables a test to be done without causing any unnecessary changes to the database; this can be either to grab an original value for patch test, create a new document for a delete test (so that current documents are not deleted), etc.
+- Test: **Required** API request that is being tested
+- Undo: **Optional** API request made after test is done to return database back to former state; this can be a delete request to remove a document created in the test, a patch request to revert a document back to its original values, etc.
+These different tests can pass information to one another so that changes made in one request can be used to influence API calls of subsequent calls (call order is Predo --> Test --> Undo)
+
+The output is a dataframe that is aggregated into easier to digest views that describe the success rates of all the APIs and easily direct the user to any APIs that failed despite expected success or succeeded despite expected failure. After correcting and validation on the server's APIs, the tests can be ran again to validate the changes made.
 
 ## Tests
+General tests are ran, independent of any input/payload sent with the API. Field specific tests are then ran to ensure that inputs that should work do work and inputs that should not work do not work. Custom tests are then ran in two different formats: the first being inputs and expected results that are input by the user at instantiation, the second being more complex functions with an expected structure that the object will use to run tests. 
 
 ### General Tests
 Not specific to input
@@ -189,16 +197,28 @@ The custom_tests is input as an array of dict with the form below that are used 
 
 ## Implementation 
 
-To be updated
+There is a little bit of setup work to be done before instantiating the object, mainly in setting up the *test_fields* parameter. The instantiation process is straightforward and allows for a fair amount of customization of how the tests are run and how their results are displayed. Results can be viewed with several automatically created dataframes with varying amounts of granularity
 
-## Results
+### Pre-instantiation
 
-To be updated
+****To be updated****
+
+### Instantiation
+
+****To be updated****
+
+### Running Tests
+
+****To be updated****
+
+### Viewing Results
+
+****To be updated****
 
 ## Class Attributes and Methods
 
 ### Input Attributes
-####ase_url` (string)
+#### `base_url` (string)
  Base URL consistent across multiple predo, test, and undo functions.
 #### `test_fields` (list)
  List of dictionaries specifying which fields should be tested.
@@ -459,3 +479,6 @@ Clears/resets pertinent variables; likely used before running all tests.
 
 #### `run_custom_inputs`
 Runs all tests specified by the custom_inputs attribute.
+
+## Utils Functions
+****To be updated****
