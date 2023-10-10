@@ -468,7 +468,7 @@ class APITester():
             url (string): url used to make the call
             header (dict): object sent as header
             body (dict): object sent as body
-        success (bool): whether the api call was success (200 response)
+        success (bool): whether the api call was success (200s response)
         out_json (dict): json of the response of the api (or dict notifying user of server error)
         response (obj): request response object in its entirety
         '''
@@ -494,7 +494,7 @@ class APITester():
             }
 
         response = api_obj['function'](api_input['url'],headers=api_input['header'],json=api_input['body'])
-        success = (response.status_code == 200)
+        success = (response.status_code // 100 == 2)
         server_error =  (response.status_code // 100) % 10 == 5
         url_not_found = response.status_code == 404
         
@@ -1550,9 +1550,9 @@ class APITester():
         }
 
         self.tests_summary = tests_summary
-        self.failed_predo = [val for val in self.results if hasattr(val['predo_response'], 'status_code') and val['predo_response'].status_code != 200]
+        self.failed_predo = [val for val in self.results if hasattr(val['predo_response'], 'status_code') and val['predo_response'].status_code // 100 != 2]
         self.failed_test = [val for val in self.results if not val['expected_result']]
-        self.failed_undo = [val for val in self.results if hasattr(val['undo_response'], 'status_code') and val['undo_response'].status_code != 200]
+        self.failed_undo = [val for val in self.results if hasattr(val['undo_response'], 'status_code') and val['undo_response'].status_code // 100 != 2]
 
         # reset print statuses --------------------------------------------------------------------
         if print_status_override:
