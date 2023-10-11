@@ -14,6 +14,14 @@ def change_date(date_string, days_diff, input_form='%Y-%m-%d'):
     return new_date_obj.strftime('%Y-%m-%d')
 
 def test_boundary(val, change, test_type):
+    '''
+    changes a value based on the data type to account for dates, arrays, and numbers
+        potentially being changed when testing min and max values
+
+    val (dynamic): the input value that is to be changed
+    change (int): the increment by which the value is to be changed
+    test_type (string): the data type being tested
+    '''
     if test_type == 'date':
         return change_date(val, change)
     if test_type == 'array':
