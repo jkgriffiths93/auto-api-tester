@@ -4,6 +4,8 @@ The fail-fast approach was taken when putting together this README so it might b
 
 An object designed to run various preset and custom API tests.
 
+Created by [Jeff Griffiths](https://jeffgriffiths.dev)
+
 ## In this README
 
 - [Overview](#overview)
