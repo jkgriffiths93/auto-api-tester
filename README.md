@@ -200,15 +200,83 @@ The custom_tests is input as an array of dict with the form below that are used 
 
 ## Implementation 
 
-There is a little bit of setup work to be done before instantiating the object, mainly in setting up the *test_fields* parameter. The instantiation process is straightforward and allows for a fair amount of customization of how the tests are run and how their results are displayed. Results can be viewed with several automatically created dataframes with varying amounts of granularity
+There is some setup work to be done before instantiating the object, mainly in setting up the *test_fields* parameter. The instantiation process is straightforward and allows for a fair amount of customization of how the tests are run and how their results are displayed. Results can be viewed with several automatically created dataframes with varying amounts of granularity
+
+In the examples below, I opted to use the "creating a resource" API from [JSONPlaceholder](https://jsonplaceholder.typicode.com/guide/) as it is public access and allows for a body of data to be sent. The "deleting a resource" api serves as the "undo" in the APITester object.
+
+**NOTE**: Several of the tests run in the [JSONPlaceholder](https://jsonplaceholder.typicode.com/guide/) example fail, which in practice would allow the user to note where the API needs some sort of validation. In this case because [JSONPlaceholder](https://jsonplaceholder.typicode.com/guide/) understandably doesn't seem to have validation, having failed tests is expected.
 
 ### Pre-instantiation
 
-****To be updated****
+Before instatiating the object, the user needs to import a class and function from `auto_api_tester` and a the `requests` package. Then optional but helpful steps include creating an acceptable body input (if applicable for current API) followed by a test field template function that modifies the `create_test_field` function from `auto_api_tester`. Then an array of test fields should be made, finally followed by the predo, test, and undo inputs. These can all be created during instantiation, but make for more readable code if defined before instantiation. See below for example pre-instantiation example to test a public API found on [JSONPlaceholder](https://jsonplaceholder.typicode.com/guide/):
+
+```python
+# import needed classes/functions
+from auto_api_tester import APITester
+from auto_api_tester.utils import create_test_field
+import requests
+
+# create input
+create_resource_acceptable_input = {
+    'name': 'joe',
+    'age': 25,
+    'shirts': ['white', 'black', 'grey']
+}
+
+# test fields template (template function to make easier process)
+def create_resource_test_field(test_field, test_type, field_parameters, required, default, deleteable=False, acceptable_input=create_resource_acceptable_input, array_type=None):
+    return create_test_field(test_field, test_type, field_parameters, required, default, deleteable, acceptable_input, array_type)
+ 
+create_resource_test_fields = [
+    create_resource_test_field('name', 'string', {}, True, False),
+    create_resource_test_field('age', 'integer', {min: 0, max: 150}, True, False),
+    create_resource_test_field('shirts', 'array', {}, False, False, array_type='string'),
+]
+
+# define predo, test, and undo
+create_resource_predo=None
+create_resource_test={
+    'function': requests.post,
+    'url': '/posts',
+    'header': {'Content-Type': 'application/json'},
+    'body': create_resource_acceptable_input,
+    'url_ids': [],
+    'final_undo': False
+}
+create_resource_undo={
+    'function': requests.delete,
+    'url': '/posts/<id>',
+    'header': {},
+    'body': {},
+    'url_ids': [{'referenced_value': True, 'source': 'test', 'component': 'response', 'location': 'id'}],
+    'on_success': True    
+}
+```
 
 ### Instantiation
 
-****To be updated****
+Once the fields and predo/test/undo inputs have been developed, instantiation is simply a matter of inputting those values along with the base_url (which when put together with the corresponding urls in the predo, test, and undo inputs should respectively make the entirety of the API url). There are several optional inputs that can also be included and are outlined below the following example implementation:
+
+```python
+create_resource_tester = APITester(
+    base_url='https://jsonplaceholder.typicode.com',
+    test_fields=create_resource_test_fields,
+    predo=create_resource_predo,
+    test=create_resource_test,
+    undo=create_resource_undo
+)
+```
+
+- [`custom_inputs`](`custom_inputs`)
+- [`custom_tests`](`custom_tests`)
+- [`matching_fields`](`matching_fields`)
+- [`delete_value`](`delete_value`)
+- [`print_status`](`print_status`)
+- [`print_json`](`print_json`)
+- [`print_progress`](`print_progress`)
+- [`display_refresh`](`display_refresh`)
+- [`min_print_wait`](`min_print_wait`)
+
 
 ### Running Tests
 
@@ -225,9 +293,11 @@ There is a little bit of setup work to be done before instantiating the object, 
 ## Class Attributes and Methods
 
 ### Input Attributes
-#### `base_url` (string)
+#### `base_url`
+**(string)**
  Base URL consistent across multiple predo, test, and undo functions.
-#### `test_fields` (list)
+#### `test_fields`
+**(list)**
  List of dictionaries specifying which fields should be tested.
 
  Should be omitted if there is not a body json submit as part of the API (will still run general, non-field-specific tests)
@@ -258,11 +328,14 @@ There is a little bit of setup work to be done before instantiating the object, 
     }
 ```
   
-#### `predo`* (dict)
+#### `predo`*
+**(dict)**
  Info needed to run an API before the API to be tested.
-#### `test`* (dict)
+#### `test`*
+**(dict)**
  Info needed to run the API that is to be tested.
-#### `undo`* (dict)
+#### `undo`*
+**(dict)**
  Info needed to run an API after the API to be tested.
 
 #### *`predo`/ `test` / `undo` / `final_undo` notes:
@@ -309,7 +382,9 @@ There is a little bit of setup work to be done before instantiating the object, 
 
 locations can be nested values as explained in the location description above
 
-#### `custom_inputs` (list)
+#### `custom_inputs`
+**(list; default: `None`)**
+
  Array of objects to input custom combinations of data with expected results for bespoke testing.
 
  custom_inputs is an array of dict with the form below used that uses the same internal methods to run tests (including using test url/function and running any predo or undo requests), but using any combination of input custom header, body, and url_ids:
@@ -328,7 +403,9 @@ locations can be nested values as explained in the location description above
 }
 ```
                     
-#### `custom_tests` (list)
+#### `custom_tests`
+**(list; default: `None`)**
+
  Array of objects containing information needed to run custom input tests.
 
  the custom_tests is an array of dict with the form below that are used to run custom tests. Here is the structure of those dict:
@@ -376,74 +453,147 @@ meta_data (dict): information about the function with the following form:
         this number will feed a progress bar to show progress in the test
 ```
 
-#### `matching_fields` (list)
- Array of arrays with values that should match one another.
-#### `delete_value` (string)
- Value to be used in the header or body of an API request when an indirect reference is made, but the value cannot be found.
+#### `matching_fields`
+**(list; default: `None`)**
 
- this situation usually occurs when reverting a document back to its original value through an undo API request, but the original value did not contain the attribute that was edited so it needs to be flagged for deletion; this delete_value can also be a flag to make a patch API remove an optional value for the document
+Array of arrays with values that should match one another.
+
+#### `delete_value`
+**(string; default: `None`)**
+
+Value to be used in the header or body of an API request when an indirect reference is made, but the value cannot be found.
+
+This situation usually occurs when reverting a document back to its original value through an undo API request, but the original value did not contain the attribute that was edited so it needs to be flagged for deletion; this delete_value can also be a flag to make a patch API remove an optional value for the document
  
-#### `print_status` (bool)
- Print status (passed/fail) of each API request.
-#### `print_json` (bool)
- Print JSON result of each API request.
-#### `print_progress` (bool)
- Print progress bar when steps are updated.
-#### `display_refresh` (bool)
- For progress bar, refresh the print display instead of printing to a new line.
-#### `min_print_wait` (float)
- Amount of time between progress prints.
+#### `print_status`
+**(bool; default: `False`)**
+
+Print status (passed/fail) of each API request.
+
+#### `print_json`
+**(bool; default: `False`)**
+
+Print JSON result of each API request.
+
+#### `print_progress`
+**(bool; default: `True`)**
+
+Print progress bar when steps are updated.
+
+#### `display_refresh`
+**(bool; default: `True`)**
+
+For progress bar, refresh the print display instead of printing to a new line.
+
+#### `min_print_wait`
+**(float; default: `0.04`)**
+
+Amount of time between progress prints.
 
 ---
 ### Input Attributes with No Inputs
 ****To be updated**** -- description of what this even means
 
-#### `tests_summary` (dict)
+#### `tests_summary`
+**(dict)**
+
  Counts of passed tests and total tests for each field.
-#### `log` (dict)
+
+#### `log`
+**(dict)**
+
  A log of the previously run predo, test, undo that for each of the three API requests.
-#### `results` (list)
- List of results of tests. ****To be updated**** show what fields are available; discuss that those are same fields shown in failed_predo, etc.
-#### `current_result` (dict)
+
+#### `results`
+**(list)**
+
+List of results of tests. ****To be updated**** show what fields are available; discuss that those are same fields shown in failed_predo, etc.
+
+#### `current_result`
+**(dict)**
+
  Object containing all the results that are currently being processed; resets at the end of each full test.
-#### `tests_summary_by_field` (list)
+
+#### `tests_summary_by_field`
+**(list)**
+
  List of dict of counts of passed tests and total tests for each field.
-#### `failed_predo` (list)
+
+#### `failed_predo`
+**(list)**
+
  List of failed predo requests.
-#### `failed_test` (list)
+
+#### `failed_test`
+**(list)**
+
  List of failed test requests.
-#### `failed_undo` (list)
+
+#### `failed_undo`
+**(list)**
+
  List of failed undo requests.
-#### `l1_progress_bar` (dict)
+
+#### `l1_progress_bar`
+**(dict)**
+
  Object to store info on progress bar for highest level view of tests.
-#### `l2_progress_bar` (dict)
+
+#### `l2_progress_bar`
+**(dict)**
+
  Object to store info on progress bar for next level of hierarchy of tests.
-#### `l3_progress_bar` (dict)
+
+#### `l3_progress_bar`
+**(dict)**
+
  Object to store info on progress bar for next level of hierarchy of tests.
 
 ---
 ### Non-Input Attributes
 
-#### `total_predo_issues` (integer)
- Running count of failed attempts at predo.
-#### `total_test_issues` (integer)
- Running count of unexpected results.
-#### `total_undo_issues` (integer)
- Running count of failed attempts at undo.
+#### `total_predo_issues`
+**(integer)**
+
+Running count of failed attempts at predo.
+
+#### `total_test_issues`
+**(integer)**
+
+Running count of unexpected results.
+
+#### `total_undo_issues`
+**(integer)**
+
+Running count of failed attempts at undo.
 
 ---
 ### Class Constants
 
-#### `_general_test_field` (string)
- Name to put in 'field' attribute for output for non-field specific tests.
-#### `_log_init` (dict)
- Initial value for log.
-#### `_l1_init` (dict)
- Initial value for l1_progress_bar.
-#### `_l2_init` (dict)
- Initial value for l2_progress_bar.
-#### `_l3_init` (dict)
- Initial value for l3_progress_bar.
+#### `_general_test_field`
+**(string)**
+
+Name to put in 'field' attribute for output for non-field specific tests.
+
+#### `_log_init`
+**(dict)**
+
+Initial value for log.
+
+#### `_l1_init`
+**(dict)**
+
+Initial value for l1_progress_bar.
+
+#### `_l2_init`
+**(dict)**
+
+Initial value for l2_progress_bar.
+
+#### `_l3_init`
+**(dict)**
+
+Initial value for l3_progress_bar.
 
 ---
 ### Commonly Used Methods
