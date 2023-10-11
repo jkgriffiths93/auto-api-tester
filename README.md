@@ -345,19 +345,146 @@ create_resource_tester.results
 - `test_source` **(str)**: the category of the test (general, field, custom, etc.)
 
 ### Usage Suggestions
-Setting up a single file to test all API calls for a common root url (e.g., /users, /profiles, etc.) is helpful. The following suggestions are made to streamline and organize that process.
+Setting up a single file to test all API calls for a common root url (e.g., /users, /profiles, etc.) is helpful. Using a program with individual cells such as Jupyter Notebook is helpful (notes in example clode below show where code can be broken up into different cells). The following suggestions are made to streamline and organize that process.
 
 #### Create a class based on API Tester
-\****To be updated****
+Creating a class using APITester as a super class will provide one touch point to edit default values such as the `base_url` and print settings. See example:
+
+```python
+class My_APITester(APITester):
+    def __init__(
+        self,
+        test_fields = None,
+        predo = None,
+        test = None,
+        undo = None,
+        custom_inputs = [],
+        custom_tests = [],
+        matching_fields = None,
+        delete_value = '--DELETEDOC--',
+        print_status = False,
+        print_json = False
+    ):
+        super().__init__(
+            base_url='****input root url here e.g. https://jsonplaceholder.typicode.com****',
+            test_fields = test_fields,
+            predo = predo,
+            test = test,
+            undo = undo,
+            custom_inputs = custom_inputs,
+            custom_tests = custom_tests,
+            matching_fields = matching_fields,
+            delete_value = delete_value,
+            print_status = print_status,
+            print_json = print_json
+        )
+        return
+```
 
 #### Define commonly used headers
-\****To be updated****
+Often times, the same header input will be used to declare whether a request contains data in the body or to provide a token for private APIs. The following provides examples of variables that can be defined to then set at the `header` attribute for the predo, test, and undo processes for all of the API tests:
 
-#### Consolidate tester objects and run together
-\****To be updated****
+```python
+token_header = {'X-Auth-Token': ***token***}
+json_header = {'Content-Type': 'application/json'}
+token_json_header = {'X-Auth-Token': ***token***, 'Content-Type': 'application/json'}
+```
 
-#### Aggregate results from all testers objects
-\****To be updated****
+#### Consolidate tester objects, run together, and view results together
+Creating a means of putting all of the tester objects into a single array can make for easier mass testing and results viewing. See below for an example on how this might look
+
+##### Consolidated tester objects
+The objects in this array contain features that are used to help run the tests and view the results. See the subsections that follow for more context.
+
+```python
+all_tstrs = [
+    {'name': 'api_1', 'tstr': api_1tstr, 'run': False},
+    {'name': 'api_2', 'tstr': api_2tstr, 'run': False},
+    {'name': 'api_3', 'tstr': api_etstr, 'run': False},
+]
+```
+
+##### Runnings the tests
+
+```python
+run_all = True
+
+def run_it_func(name):
+    found_obj = None
+    for obj in all_tstrs:
+        if 'name' in obj and obj['name'] == name:
+            found_obj = obj
+            break
+    if found_obj == None:
+        raise ValueError(f'{name} not found as name in all_tstrs')
+    run_it = found_obj['run']
+    tstr = found_obj['tstr']
+    if run_all or run_it:
+        tstr.run_all_tests()
+    else:
+        print('test not ran')
+    return
+```
+Each test can be run in its own cell:
+```python
+test_name = 'api_1'
+run_it_func(test_name)
+```
+```python
+test_name = 'api_2'
+run_it_func(test_name)
+```
+```python
+test_name = 'api_3'
+run_it_func(test_name)
+```
+
+##### Viewing the results
+The results for all testers can be aggregated and viewed using the code blocks below in order to locate which areas need a deeper dive.
+
+This block will set up the output and show very high level print outs of the success for each of the tester objects (whether all tests were passed and if the expected number of tests ran.
+```python
+tstrs = [val['tstr'] for val in all_tstrs if run_all or val['run']]
+
+all_test_summary = [val.tests_summary for val in tstrs]
+all_test_summary_by_field = [val.tests_summary_by_field for val in tstrs]
+all_failed_predos = [val.failed_predo for val in tstrs]
+all_failed_tests = [val.failed_test for val in tstrs]
+all_failed_undos = [val.failed_undo for val in tstrs]
+
+print([val['expected_tests'] == val['total_tests'] for val in all_test_summary])
+print([val['passed_tests'] == val['total_tests'] and val['expected_tests'] == val['total_tests'] for val in all_test_summary])
+```
+
+This block shows what errors (if any) came from the test process
+```python
+for i, tstr in enumerate(all_failed_tests):
+    for val in tstr:
+        print(f"{all_tstrs[i]['name']}: {val['field']}: {val['error']}")
+
+if sum([len(val) for val in all_failed_tests]) == 0:
+    print('no failed tests')
+```
+
+This block shows what errors (if any) came from the predo process
+```python
+for i, tstr in enumerate(all_failed_predos):
+    for val in tstr:
+        print(f"{all_tstrs[i]['name']}: {val['field']}: {val['error']}")
+
+if sum([len(val) for val in all_failed_predos]) == 0:
+    print('no failed predos')
+```
+
+This block shows what errors (if any) came from the undo process
+```python
+for i, tstr in enumerate(all_failed_undos):
+    for val in tstr:
+        print(f"{all_tstrs[i]['name']}: {val['field']}: {val['undo_response'].json()}")
+        
+if sum([len(val) for val in all_failed_undos]) == 0:
+    print('no failed undos')
+```
 
 #### Suggested flow
 \****To be updated****
