@@ -405,6 +405,7 @@ all_tstrs = [
 ```
 
 ##### Runnings the tests
+Using a process simlar to the block below, a user can determine whether to run tests for all the tester objects or just select ones (as defined in the conoslidated tester objects).
 
 ```python
 run_all = True
@@ -487,8 +488,12 @@ if sum([len(val) for val in all_failed_undos]) == 0:
 ```
 
 #### Suggested flow
-\****To be updated****
-- setup things for all processes, setup indivdual processes, run all processes, look at aggregate results, deep dive individual results 
+The following flow is recommended when setting up multiple APITester objects:
+- **Set up for all processes**: import packages, establish a new class and common headers if desired (see subsection above), write request to get token if needed for private processes
+- **Set up individual processes**: for one API test in a block, set up the test_fields, predo, test, and undo inputs then instantiate the tester object
+- **Run all processes**: run the process for each tester object (see subsection above for tips on how to more easily control which testers runs)
+- **Look at aggregate results**: look at summary results to see if any API tests need to be further investigated (see subsection above for tips on how to easily aggregate that data)
+- **Deep dive individual results**: look at specific testers to determine what the issues are so that adjustments can be made before re-running tests
 
 ## Class Attributes and Methods
 
