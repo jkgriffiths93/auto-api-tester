@@ -850,8 +850,8 @@ The following functions can be imported from `auto_api_tester.utils`. Most of th
 - `check_field`: checks to see if a field of an object exists, including nested fields
 - `update_field_value`: updates a field of an object, including nested values
 - `get_field_value`: get value an object at specified location, including nested values
-- `create_test_field: creates a single dict to be used as one of potentially many dicts in the array 'test_fields', an input` for APITester object
-- `update_url_id: replaces a placeholders in input URL with input ID values; there should be the same number of values` in the input 'ids' as there are placeholders in the input 'url'
+- `create_test_field`: creates a single dict to be used as one of potentially many dicts in the array 'test_fields', an input for APITester object
+- `update_url_id`: replaces a placeholders in input URL with input ID values; there should be the same number of values in the input 'ids' as there are placeholders in the input 'url'
 - `find_vals`: process a dictionary from the find_hb_vals or find_id_vals function
 - `find_hb_vals`: creates an output object based on either explicit values or values referenced in an input log
 - `find_ids_vals`: creates an output array based on either explicit values or values referenced in an input log
