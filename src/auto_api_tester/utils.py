@@ -176,7 +176,7 @@ def update_url_id(url, ids, placeholder = '<id>'):
         raise ValueError(f'length of ids ({len(ids)}) array and "{placeholder}" count in url are not equal ({url})')
         return
     for i, val in enumerate(ids):
-        url = url.replace(placeholder, val, 1)
+        url = url.replace(placeholder, str(val), 1)
 
     return url
 
