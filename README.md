@@ -844,4 +844,15 @@ Clears/resets pertinent variables; likely used before running all tests.
 Runs all tests specified by the custom_inputs attribute.
 
 ## Utils Functions
-\****To be updated****
+The following functions can be imported from `auto_api_tester.utils`. Most of them are used to help build the APITester class, so they are not likely to be useful. For more information on inputs and outputs for each, reference the documentation accessible through help({desired_function})
+-`change_date`: calculates days difference for a date string
+-`test_boundary`: changes a value based on the data type to account for dates, arrays, and numbers potentially being changed when testing min and max values
+-`check_field`: checks to see if a field of an object exists, including nested fields
+-`update_field_value`: updates a field of an object, including nested values
+-`get_field_value`: get value an object at specified location, including nested values
+-`create_test_field: creates a single dict to be used as one of potentially many dicts in the array 'test_fields', an input` for APITester object
+-`update_url_id: replaces a placeholders in input URL with input ID values; there should be the same number of values` in the input 'ids' as there are placeholders in the input 'url'
+-`find_vals`: process a dictionary from the find_hb_vals or find_id_vals function
+-`find_hb_vals`: creates an output object based on either explicit values or values referenced in an input log
+-`find_ids_vals`: creates an output array based on either explicit values or values referenced in an input log
+-`result_template`: creates a dictionary output that can be included in the objects result list
