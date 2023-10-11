@@ -16,6 +16,7 @@ An object designed to run various preset and custom API tests.
   - [Instantiation](#instantiation)
   - [Running Tests](#running-tests)
   - [Viewing Results](#viewing-results)
+  - [Usage Suggestions](#usage-suggestions)
 - [Class Attributes and Methods](#class-attributes-and-methods)
   - [Input Attributes](#input-attributes)
   - [Non-Input Attributes](#non-input-attributes)
@@ -217,6 +218,10 @@ There is a little bit of setup work to be done before instantiating the object, 
 
 ****To be updated****
 
+### Usage Suggestions
+
+****To be updated**** (make a class based off APITester class with same base url, etc.
+
 ## Class Attributes and Methods
 
 ### Input Attributes
@@ -391,13 +396,14 @@ meta_data (dict): information about the function with the following form:
 
 ---
 ### Input Attributes with No Inputs
+****To be updated**** -- description of what this even means
 
 #### `tests_summary` (dict)
  Counts of passed tests and total tests for each field.
 #### `log` (dict)
  A log of the previously run predo, test, undo that for each of the three API requests.
 #### `results` (list)
- List of results of tests.
+ List of results of tests. ****To be updated**** show what fields are available; discuss that those are same fields shown in failed_predo, etc.
 #### `current_result` (dict)
  Object containing all the results that are currently being processed; resets at the end of each full test.
 #### `tests_summary_by_field` (list)
