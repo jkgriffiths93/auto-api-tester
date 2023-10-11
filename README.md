@@ -267,15 +267,15 @@ create_resource_tester = APITester(
 )
 ```
 
-- [`custom_inputs`](#`custom_inputs`)
+- [`custom_inputs`](#custom_inputs)
 - [`custom_tests`](#custom_tests)
-- [`matching_fields`](#`matching_fields`)
-- [`delete_value`](#`delete_value`)
-- [`print_status`](#`print_status`)
-- [`print_json`](#`print_json`)
-- [`print_progress`](#`print_progress`)
-- [`display_refresh`](#`display_refresh`)
-- [`min_print_wait`](#`min_print_wait`)
+- [`matching_fields`](#matching_fields)
+- [`delete_value`](#delete_value)
+- [`print_status`](#print_status)
+- [`print_json`](#print_json)
+- [`print_progress`](#print_progress)
+- [`display_refresh`](#display_refresh)
+- [`min_print_wait`](#min_print_wait)
 
 
 ### Running Tests
