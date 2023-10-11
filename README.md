@@ -280,15 +280,69 @@ create_resource_tester = APITester(
 
 ### Running Tests
 
-****To be updated****
+Once the object has been instantiated, the process of running the tests is simple:
+
+```python
+create_resource_tester.run_all_tests()
+```
 
 ### Viewing Results
 
-****To be updated****
+The results are stored in an array of dictionaries, each dictionary representing an individual test the the object has run. These results are aggregated into different views that summarize the results and help pinpoint issues. The following attributes are helpful when looking at results:
+
+`tests_summary`: shows the highest level summary of tests passed (received expected API response), total tests, and expected tests
+```python
+create_resource_tester.tests_summary
+```
+
+`tests_summary_by_field`: shows the same information as test_summary but broken out by different `test_field` (\**General** represents the non-field specific tests)
+```python
+create_resource_tester.tests_summary_by_field
+```
+
+`failed_test`: gives detailed list of all test processes that failed (API response was different than expected; see `results` below for details on different attributes of list)
+```python
+create_resource_tester.failed_test
+```
+
+`failed_predo`:  gives detailed list of all predo processes that failed (error for API response; see `results` below for details on different attributes of list)
+```python
+create_resource_tester.failed_predo
+```
+
+`failed_undo`:  gives detailed list of all undo processes that failed (error for API response; see `results` below for details on different attributes of list)
+```python
+create_resource_tester.failed_undo
+```
+
+`results`: gives detailed list of objects for all tests that were run; attributes are defined below.
+```python
+create_resource_tester.results
+```
+
+**`results` attributes**
+- `expected_result` **(bool)**:
+- `expected_api_success` **(bool)**:
+- `test_name` **(str)**:
+- `error` **(str)**:
+- `field` **(str)**:
+- `predo_input` **(NoneType)**:
+- `predo_status` **(str)**:
+- `predo_response` **(NoneType)**:
+- `predo_json` **(NoneType)**:
+- `test_input` **(dict)**:
+- `test_status` **(str)**:
+- `test_response` **(requests.models.Response)**:
+- `test_json` **(dict)**:
+- `undo_input` **(dict)**:
+- `undo_status` **(str)**:
+- `undo_response` **(requests.models.Response)**:
+- `undo_json` **(dict)**:
+- `test_source` **(str)**:
 
 ### Usage Suggestions
 
-****To be updated**** (make a class based off APITester class with same base url, etc.
+****To be updated**** (make a class based off APITester class with same base url, make commonly used headers, run together, view results, etc.
 
 ## Class Attributes and Methods
 
