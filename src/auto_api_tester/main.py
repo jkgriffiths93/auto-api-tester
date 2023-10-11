@@ -253,9 +253,9 @@ class APITester():
     '''
     _general_test_field = '**General**'
     _log_init = {'predo': {}, 'test': {}, 'undo': {}}
-    _l1_init = {'name': 'l1', 'active': True, 'progress_bar': TimerBar(steps=0), 'current_step': -1, 'suffix': ' {} / {}', 'issues': 0}
-    _l2_init = {'name': 'l2', 'active': False, 'progress_bar': TimerBar(steps=0), 'current_step': -1, 'suffix': ' {} / {}', 'issues': 0}
-    _l3_init = {'name': 'l3', 'active': False, 'progress_bar': TimerBar(steps=0), 'current_step': -1, 'suffix': ' {} / {} tests', 'issues': 0}
+    _l1_init = {'name': 'l1', 'active': True, 'progress_bar': TimerBar(steps=0, print_after=True), 'current_step': -1, 'suffix': ' {} / {}', 'issues': 0}
+    _l2_init = {'name': 'l2', 'active': False, 'progress_bar': TimerBar(steps=0, print_after=True), 'current_step': -1, 'suffix': ' {} / {}', 'issues': 0}
+    _l3_init = {'name': 'l3', 'active': False, 'progress_bar': TimerBar(steps=0, print_after=True), 'current_step': -1, 'suffix': ' {} / {} tests', 'issues': 0}
 
     def __init__(self,
                  base_url,
