@@ -1,3 +1,5 @@
+The fail-fast approach was taken when putting together this README so it might be rough around the edges. Please reach out with any feedback you have on the README or code itself.
+
 # APITester
 
 An object designed to run various preset and custom API tests.
@@ -29,7 +31,9 @@ An object designed to run various preset and custom API tests.
 
 ## Overview
 
-The APITester object takes users inputs about what types of tests should be run, runs the tests, then stores the results in a number of formats as different attributes. Each API request has an *api_input*  (object with a url, header, and body), an expected outcome (success of failure), and then a place to store the specific response for further review.
+The APITester object takes users inputs about what types of tests should be run, runs the tests, then stores the results in a number of formats as different attributes. The intent is to allow a user to do initial testing when established an API and then have an easy means of retesting the API when updates to the underlying data models or APIs themselves are made.
+
+Each API request has an *api_input*  (object with a url, header, and body), an expected outcome (success of failure), and then a place to store the specific response for further review.
 
 Each test consists of up to three different API requests-- a predo, test, and undo as described below:
 - Predo: **Optional** API request made before test is done that enables a test to be done without causing any unnecessary changes to the database; this can be either to grab an original value for patch test, create a new document for a delete test (so that current documents are not deleted), etc.
@@ -341,8 +345,23 @@ create_resource_tester.results
 - `test_source` **(str)**: the category of the test (general, field, custom, etc.)
 
 ### Usage Suggestions
+Setting up a single file to test all API calls for a common root url (e.g., /users, /profiles, etc.) is helpful. The following suggestions are made to streamline and organize that process.
 
-****To be updated**** (make a class based off APITester class with same base url, make commonly used headers, run together, view results, etc.
+#### Create a class based on API Tester
+****To be updated****
+
+#### Define commonly used headers
+****To be updated****
+
+#### Consolidate tester objects and run together
+****To be updated****
+
+#### Aggregate results from all testers objects
+****To be updated****
+
+#### Suggested flow
+****To be updated****
+- setup things for all processes, setup indivdual processes, run all processes, look at aggregate results, deep dive individual results 
 
 ## Class Attributes and Methods
 
