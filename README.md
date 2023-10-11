@@ -321,24 +321,24 @@ create_resource_tester.results
 ```
 
 **`results` attributes**
-- `expected_result` **(bool)**:
-- `expected_api_success` **(bool)**:
-- `test_name` **(str)**:
-- `error` **(str)**:
-- `field` **(str)**:
-- `predo_input` **(NoneType)**:
-- `predo_status` **(str)**:
-- `predo_response` **(NoneType)**:
-- `predo_json` **(NoneType)**:
-- `test_input` **(dict)**:
-- `test_status` **(str)**:
-- `test_response` **(requests.models.Response)**:
-- `test_json` **(dict)**:
-- `undo_input` **(dict)**:
-- `undo_status` **(str)**:
-- `undo_response` **(requests.models.Response)**:
-- `undo_json` **(dict)**:
-- `test_source` **(str)**:
+- `expected_result` **(bool)**: whether the API response received was expected
+- `expected_api_success` **(bool)**: expected API response (success = True, failed = False)
+- `test_name` **(str)**: name of the test being conducted
+- `error` **(str)**: description of the error that occured
+- `field` **(str)**: field name being tested ('\**General**' for non-field specific tests)
+- `predo_input` **(NoneType)**: the url, header, and body, input for the predo process
+- `predo_status` **(str)**: the status/result of the predo process
+- `predo_response` **(NoneType)**: the requests response object resulting from the API request made in the predo proces
+- `predo_json` **(NoneType)**: the json from the requests response for the predo process
+- `test_input` **(dict)**: the url, header, and body, input for the test process
+- `test_status` **(str)**: the status/result of the test process
+- `test_response` **(requests.models.Response)**: the requests response object resulting from the API request made in the test proces
+- `test_json` **(dict)**: the json from the requests response for the test process
+- `undo_input` **(dict)**: the url, header, and body, input for the undo process
+- `undo_status` **(str)**: the status/result of the undo process
+- `undo_response` **(requests.models.Response)**: the requests response object resulting from the API request made in the undo proces
+- `undo_json` **(dict)**: the json from the requests response for the undo process
+- `test_source` **(str)**: the category of the test (general, field, custom, etc.)
 
 ### Usage Suggestions
 
