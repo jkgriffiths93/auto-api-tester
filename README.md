@@ -324,7 +324,7 @@ create_resource_tester.failed_undo
 create_resource_tester.results
 ```
 
-**`results` attributes**
+####`results` attributes
 - `expected_result` **(bool)**: whether the API response received was expected
 - `expected_api_success` **(bool)**: expected API response (success = True, failed = False)
 - `test_name` **(str)**: name of the test being conducted
@@ -348,19 +348,19 @@ create_resource_tester.results
 Setting up a single file to test all API calls for a common root url (e.g., /users, /profiles, etc.) is helpful. The following suggestions are made to streamline and organize that process.
 
 #### Create a class based on API Tester
-****To be updated****
+\****To be updated****
 
 #### Define commonly used headers
-****To be updated****
+\****To be updated****
 
 #### Consolidate tester objects and run together
-****To be updated****
+\****To be updated****
 
 #### Aggregate results from all testers objects
-****To be updated****
+\****To be updated****
 
 #### Suggested flow
-****To be updated****
+\****To be updated****
 - setup things for all processes, setup indivdual processes, run all processes, look at aggregate results, deep dive individual results 
 
 ## Class Attributes and Methods
@@ -565,7 +565,7 @@ Amount of time between progress prints.
 
 ---
 ### Input Attributes with No Inputs
-****To be updated**** -- description of what this even means
+Inputs should not generally be provided for these attributes unless the new object is to be based off an old object and those previously ran tests and results should be passed on to the new object. Generally, rerunning tests after defining a new object is recommended.
 
 #### `tests_summary`
 **(dict)**
@@ -580,7 +580,7 @@ Amount of time between progress prints.
 #### `results`
 **(list)**
 
-List of results of tests. ****To be updated**** show what fields are available; discuss that those are same fields shown in failed_predo, etc.
+List of results of tests. [See here for further details](#results-attributes)
 
 #### `current_result`
 **(dict)**
@@ -712,4 +712,4 @@ Clears/resets pertinent variables; likely used before running all tests.
 Runs all tests specified by the custom_inputs attribute.
 
 ## Utils Functions
-****To be updated****
+\****To be updated****
