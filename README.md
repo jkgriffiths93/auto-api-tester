@@ -324,7 +324,7 @@ create_resource_tester.failed_undo
 create_resource_tester.results
 ```
 
-####`results` attributes
+#### `results` attributes
 - `expected_result` **(bool)**: whether the API response received was expected
 - `expected_api_success` **(bool)**: expected API response (success = True, failed = False)
 - `test_name` **(str)**: name of the test being conducted
